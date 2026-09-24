@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #06090e;
+  --bg-secondary: #0b0f17;
+  --bg-tertiary: #101622;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 242, 254, 0.3);
+  --accent-cyan: #00f2fe;
+  --accent-blue: #4facfe;
+  --accent-violet: #7f00ff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #06090e;
+  color: #f1f5f9;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism effects */
+.glass-panel {
+  background: rgba(11, 15, 23, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(16, 22, 34, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(22, 30, 46, 0.85);
+  border-color: rgba(0, 242, 254, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 242, 254, 0.08);
+}
+
+.glass-dropdown {
+  background: rgba(11, 15, 23, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Gradients */
+.gradient-text-cyan {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-violet {
+  background: linear-gradient(135deg, #4facfe 0%, #7f00ff 50%, #e100ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(6, 9, 14, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 242, 254, 0.4);
+}
+
+/* Waveform Pulse Animation */
+@keyframes audioWave {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+.animate-wave-1 { animation: audioWave 1.2s ease-in-out infinite; }
+.animate-wave-2 { animation: audioWave 0.9s ease-in-out infinite 0.2s; }
+.animate-wave-3 { animation: audioWave 1.4s ease-in-out infinite 0.4s; }
+.animate-wave-4 { animation: audioWave 1.0s ease-in-out infinite 0.1s; }
+.animate-wave-5 { animation: audioWave 1.3s ease-in-out infinite 0.3s; }
+
+/* Grid subtle background */
+.bg-cyber-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}

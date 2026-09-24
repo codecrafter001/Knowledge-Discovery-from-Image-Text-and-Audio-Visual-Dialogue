@@ -1,0 +1,16 @@
+# Checkov static analysis configuration for Knowledge Discovery platform
+framework:
+  - all
+directory:
+  - .
+skip-check:
+  - CKV_DOCKER_1 # Base image pin warning
+  - CKV_DOCKER_2 # Healthcheck directive
+soft-fail: false
+output: cli,json
+output-file-path: console,security/checkov/results.json
+compact: true
+quiet: false
+download-external-modules: false
+evaluate-variables: true
+openai-api-key: false

@@ -1,0 +1,34 @@
+# Trivy security scanning configuration for dependencies, vulnerabilities, and misconfigurations
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - secret
+    - license
+  file-patterns:
+    - "package.json"
+    - "package-lock.json"
+    - "Dockerfile"
+    - "security/**"
+
+vulnerability:
+  type:
+    - os
+    - library
+  severity:
+    - CRITICAL
+    - HIGH
+    - MEDIUM
+
+secret:
+  enable: true
+
+misconfiguration:
+  scanners:
+    - terraform
+    - cloudformation
+    - dockerfile
+    - kubernetes
+
+format: table
+exit-code: 0

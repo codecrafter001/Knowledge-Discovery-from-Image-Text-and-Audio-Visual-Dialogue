@@ -1,0 +1,13 @@
+{
+  "minimum_severity": "MEDIUM",
+  "severity_overrides": {},
+  "exclude": [],
+  "include": [],
+  "plugins": [],
+  "workspace_policies": {
+    "enforce_tls_v1_3": true,
+    "block_public_s3_buckets": true,
+    "require_encryption_at_rest": true,
+    "require_waf_on_api_gateway": true
+  }
+}
