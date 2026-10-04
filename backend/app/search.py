@@ -43,6 +43,13 @@ def _coverage(query_terms: set[str], text: str) -> float:
     return round(len(query_terms & set(vectors.tokenize(text))) / len(query_terms), 2)
 
 
+def _box_label(passage: dict) -> str:
+    if passage["source"] == "caption":
+        return "Whole image (caption)"
+    box = passage["boundingBox"]
+    return f"OCR {passage['blockId']} @ ({box['x']:.0f}%, {box['y']:.0f}%)"
+
+
 def _empty(query: str, mode: str, start: float, message: str) -> dict:
     return {
         "query": query,
@@ -158,6 +165,7 @@ def search(query: str, mode: str = "hybrid_cross_modal", modality: str = "all") 
             "confidence": round(float(max(all_sims[idx], 0.0)), 2),
             "snippet": vectors.normalize(p["text"]),
             "pageNumber": p["page"],
+            **({"boundingBoxLabel": _box_label(p)} if p.get("source") in ("ocr", "caption") else {}),
             "groundingScore": _coverage(query_terms, p["text"]),
         })
 

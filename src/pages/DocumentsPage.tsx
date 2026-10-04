@@ -266,12 +266,14 @@ export const DocumentsPage: React.FC = () => {
           <div className="space-y-6">
             {/* Visual Inspection Preview for Image or Video */}
             {(selectedDocument.modality === 'image' || selectedDocument.modality === 'video') && (
-              <div className="relative rounded-xl overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center min-h-[300px] max-h-[420px]">
+              <div className="rounded-xl overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center min-h-[300px] max-h-[420px]">
+                {/* Wrapper sized to the rendered image so percentage boxes line up with it */}
+                <div className="relative inline-block">
                 {selectedDocument.contentUrl || selectedDocument.thumbnailUrl ? (
                   <img
                     src={selectedDocument.contentUrl || selectedDocument.thumbnailUrl}
                     alt={selectedDocument.title}
-                    className="w-full h-full object-contain max-h-[420px]"
+                    className="block max-w-full max-h-[420px]"
                   />
                 ) : (
                   <div className="text-slate-500 text-sm">Media preview unavailable</div>
@@ -299,6 +301,7 @@ export const DocumentsPage: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
             )}
 

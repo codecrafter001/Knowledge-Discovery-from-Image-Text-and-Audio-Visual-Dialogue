@@ -1,5 +1,8 @@
 export type Modality = 'text' | 'image' | 'audio' | 'video' | 'multimodal';
 
+// Where extracted evidence came from: native document text, OCR of an image region, or an image caption.
+export type EvidenceSource = 'text' | 'ocr' | 'caption';
+
 export type IngestionStatus = 'queued' | 'preprocessing' | 'extracting' | 'embedding' | 'graph_linking' | 'completed' | 'failed';
 
 export interface BoundingBox {
@@ -100,6 +103,7 @@ export interface Triplet {
   timestampRange?: [number, number]; // for audio/video [start, end]
   pageNumber?: number; // for pdf
   charSpan?: [number, number]; // for text: [start, end) offsets into the document text
+  evidenceSource?: EvidenceSource;
   boundingBox?: BoundingBox; // for image
   verified: boolean;
 }
@@ -207,8 +211,9 @@ export interface EvidenceItem {
   audioUrl?: string;
   videoUrl?: string;
   dialogueUtterance?: DialogueUtterance;
+  evidenceSource?: EvidenceSource;
   alignmentScore: number;
-  asrOcrConfidence: number;
+  asrOcrConfidence: number | null; // null for model-generated captions
   crossModalConsistency: number;
 }
 

@@ -1,100 +1,122 @@
-# 🧠 Multimodal Knowledge Discovery from Image, Text & Audio-Visual Dialogue
+# Multimodal Knowledge Discovery Platform 🔍⚡
 
-A production-grade, AI-driven Knowledge Discovery and Multi-Modal Reasoning platform built with **React, Vite, TypeScript, Tailwind CSS, Canvas Force Graphs, and Lucide Icons**.
+A multimodal knowledge discovery mono-repo platform combining FastAPI, Neo4j Graph Database, MongoDB Document Store, FAISS Vector Indexing, and React (Vite).
 
 ---
 
-## 🌟 Overview & Architecture
-
-The system discovers, grounds, and reasons over complex knowledge structures extracted asynchronously from disparate multimodal inputs:
-- **Text**: Clinical papers, technical research reports, structured JSON/markdown.
-- **Image**: High-resolution planetary imagery, geospatial multispectral bands, and medical scans with bounding box annotations.
-- **Audio Dialogue**: Panel symposiums, podcast discussions, and acoustic speech transcripts with speaker diarization.
-- **Audio-Visual Video**: Autonomous vehicle tele-operation records, traffic surveillance, and multi-speaker dialogue scenes with spatial bounding boxes and timestamps.
+## 📁 Mono-Repo Structure
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        INGESTION & DECODING                            │
-│   (PDF / DOCX / TXT)    (PNG / TIFF)     (WAV / MP3)     (MP4 / MKV)  │
-└───────────────────┬──────────────┬──────────────┬──────────────┬───────┘
-                    ▼              ▼              ▼              ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                  MULTIMODAL FEATURE EXTRACTION                         │
-│       EVA-02-CLIP        SegmentAnything-2   Whisper-Turbo    DINOv2   │
-│       (1536-dim)            (Spatial BBox)    (Diarization)   (Vision) │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                  CROSS-MODAL ALIGNMENT & FUSION                        │
-│            Speaker Coreference ── Grounded Spatial Overlap             │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│               KNOWLEDGE TRIPLET SYNTHESIS & OPEN-IE                    │
-│          (Subject) ──[Predicate / Relation]──▶ (Object)                │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                VECTOR INDEXING & KNOWLEDGE GRAPH                       │
-│             Qdrant Vector Store  ◄──►  Neo4j Cypher Engine             │
-└────────────────────────────────────────────────────────────────────────┘
+knowledge-discovery/
+├── backend/            # FastAPI application (routes, models, core logic)
+│   ├── app/            # Main FastAPI endpoints and pipeline modules
+│   │   ├── main.py     # Root API entrypoint (GET / returns {"status": "ok"})
+│   │   ├── config.py   # System configurations & environment paths
+│   │   └── routes.py   # REST API route handlers
+│   ├── requirements.txt # Python dependencies
+│   └── Dockerfile      # Backend Dockerfile
+├── extractors/         # Multimodal extraction modules (OCR, Vision, Speech stubs)
+│   ├── ocr.py          # Optical Character Recognition (pytesseract, easyocr)
+│   ├── vision.py       # Visual feature & CLIP embeddings
+│   └── speech.py       # Speech-to-text & speaker diarization (Whisper)
+├── fusion/             # Multimodal fusion engine stub
+│   └── fusion_engine.py # Cross-modal alignment and joint representations
+├── storage/            # Neo4j Graph & FAISS Vector Index interface code
+│   ├── neo4j_client.py # Neo4j Graph Database connector & Cypher execution
+│   └── faiss_index.py  # FAISS Vector Index similarity search
+├── agents/             # Autonomous agent workflows
+│   └── repair_agent.py # Self-healing repair agent placeholder
+├── frontend/           # React application (Vite, plain JavaScript)
+│   ├── src/            # React components and root API status check
+│   ├── package.json    # Frontend dependencies
+│   └── vite.config.js  # Vite server and proxy configuration
+├── docker/             # Docker infrastructure
+│   ├── Dockerfile.api  # FastAPI container definition
+│   └── docker-compose.yml # Compose file for API, Neo4j, and MongoDB
+├── docker-compose.yml  # Root compose file
+├── requirements.txt    # Pinned Python dependencies
+└── README.md           # Project documentation
 ```
 
 ---
 
-## 🚀 Key Modules & Pages
+## 🚀 Quick Start with Docker Compose
 
-1. **📊 Executive Dashboard (`/dashboard`)**: High-level KPIs, discovery feed, modality distribution, and prominent knowledge nodes.
-2. **📤 Multimodal Ingestion Suite (`/upload`)**: Drag & drop file uploads, demo presets (NASA Mars Mastcam, Quantum Dialogue, Oncology Report), and live pipeline progress.
-3. **📂 Document Repository (`/documents`)**: Filterable grid and table views with deep preview drawer (interactive bounding boxes, synchronized audio waveform player, PDF reader).
-4. **⚡ Processing Pipeline (`/pipeline`)**: Interactive 5-stage DAG visualizer with latency benchmarks, throughput metrics, and live log stream.
-5. **🔍 Knowledge Explorer (`/explorer`)**: Entities catalog, relation types matrix, and verified triplets browser with confidence scores.
-6. **🧠 Cross-Modal Query Engine (`/search`)**: Natural language question answering with step-by-step reasoning trace and grounded citations.
-7. **🛡️ Evidence & Grounding (`/evidence`)**: Primary source media inspector with spatial bounding boxes, audio timestamps, and alignment metrics.
-8. **🌐 Interactive Knowledge Graph (`/graph`)**: Canvas force-directed relational graph with zoom/pan, path finder, and node detail drawer.
-9. **📈 Evaluation & Metrics (`/evaluation`)**: F1 scores, cross-modal alignment accuracy, confusion matrix, and precision-recall simulator.
-10. **⚙️ System & API Settings (`/settings`)**: FastAPI connection manager, Mock Engine toggle, model hyperparameters, and export tools (JSON, RDF Turtle, Cypher, CSV).
-
----
-
-## 🔒 Policy & Security Guardrails
-
-The platform adheres to zero-trust security standards across:
-- **OPA (Open Policy Agent)**: Access control, tenant isolation, and PII masking rules in `security/opa/policy.rego`.
-- **Checkov**: Infrastructure and container static analysis in `security/checkov/config.yaml`.
-- **Trivy**: Vulnerability and secret scanning in `security/trivy/trivy.yaml`.
-- **tfsec**: Cloud infrastructure policy enforcement in `security/tfsec/tfsec-config.json`.
-
----
-
-## 🛠️ Targeted Repair Agent
-
-Located in `agents/repair_agent/repair_engine.ts`, this autonomous self-healing agent detects pipeline extraction bottlenecks:
-- Resolves OCR degradation via adaptive contrast stretching.
-- Overcomes ASR clipping via spectral noise subtraction and beam expansion.
-- Heals cross-modal coreference mismatches through WordNet synonym alignment.
-- Deduplicates entity vertices and enforces acyclic graph constraints.
-
----
-
-## 💻 Installation & Quickstart
+### 1. Start Services
+Run the following command in the project root:
 
 ```bash
-# 1. Clone the repository
-git clone <repo-url>
-cd "Knowledge Discovery"
+docker compose up -d
+```
+*(Or navigate to `docker/` and run `docker compose up -d`)*
 
-# 2. Install dependencies
-npm install
+This starts three containerized services:
+- **`api`**: FastAPI backend on [http://localhost:8000](http://localhost:8000)
+- **`neo4j`**: Neo4j Graph Database on [http://localhost:7474](http://localhost:7474) (Bolt: `7687`)
+- **`mongo`**: MongoDB Document Store on `localhost:27017`
 
-# 3. Start development server
-npm run dev
+### 2. Verify Service Reachability
 
-# 4. Build for production
-npm run build
+| Service | Address | Verification Command | Expected Output |
+|---|---|---|---|
+| **FastAPI Backend** | `http://localhost:8000/` | `curl http://localhost:8000/` | `{"status":"ok"}` |
+| **Neo4j Browser** | `http://localhost:7474/` | Open browser at `http://localhost:7474` | Neo4j Web Console (user: `neo4j`, pass: `password`) |
+| **MongoDB** | `localhost:27017` | `docker exec -it kd-mongo mongosh --eval "db.adminCommand('ping')"` | `{ ok: 1 }` |
+
+---
+
+## 💻 Running Frontend (React + Vite)
+
+1. Navigate to the `frontend/` directory and install dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser at **[http://localhost:5173](http://localhost:5173)**.  
+The page will connect to `http://localhost:8000/` and display:
+```json
+{
+  "status": "ok"
+}
+```
+with an active **"API CONNECTED"** status badge.
+
+---
+
+## 🐍 Local Python Virtual Environment Setup
+
+To run or develop backend modules locally without Docker:
+
+```bash
+# 1. Create Python 3.11 virtual environment
+python -m venv .venv
+
+# 2. Activate virtual environment
+# On Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
+
+# 3. Install pinned dependencies
+pip install -r requirements.txt
+
+# 4. Start FastAPI server locally
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ---
 
-## 📄 License & Attribution
-MIT License. Developed for advanced multimodal knowledge discovery research.
+## 📦 Pinned Python Dependencies
+
+The `requirements.txt` file pins the following core libraries:
+- **Vision & OCR**: `opencv-python-headless`, `pillow`, `pytesseract`, `easyocr`
+- **NLP & Transformers**: `spacy`, `transformers`
+- **Speech & Audio**: `openai-whisper`, `pyannote.audio`
+- **API & Server**: `fastapi`, `uvicorn`, `python-multipart`
+- **Databases & Vector Indexing**: `neo4j`, `faiss-cpu`, `pymongo`

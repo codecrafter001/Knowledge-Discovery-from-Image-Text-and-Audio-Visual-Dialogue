@@ -2,7 +2,8 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse
 
 from . import config, knowledge, pipeline, search, store
 from .schemas import HealthResponse, Modality, QueryRequest
@@ -32,8 +33,18 @@ def get_document(doc_id: str):
     return doc
 
 
+@router.get("/documents/{doc_id}/content", name="document_content")
+def get_document_content(doc_id: str):
+    doc = store.get_document(doc_id)
+    path = config.UPLOAD_DIR / f"{doc_id}{Path(doc['filename']).suffix.lower()}" if doc else None
+    if path is None or not path.exists():
+        raise HTTPException(404, "Document content not found")
+    return FileResponse(path, filename=doc["filename"], content_disposition_type="inline")
+
+
 @router.post("/documents/upload", status_code=202)
 async def upload_document(
+    request: Request,
     background: BackgroundTasks,
     file: UploadFile = File(...),
     title: str | None = Form(None),
@@ -61,6 +72,7 @@ async def upload_document(
         dest.unlink(missing_ok=True)
         raise
 
+    content_url = str(request.url_for("document_content", doc_id=doc_id))
     doc = {
         "id": doc_id,
         "title": title or Path(filename).stem.replace("_", " "),
@@ -76,7 +88,8 @@ async def upload_document(
         "entityCount": 0,
         "relationCount": 0,
         "tripletCount": 0,
-        "contentUrl": None,
+        "contentUrl": content_url,
+        **({"thumbnailUrl": content_url} if detected == "image" else {}),
         "metadata": {},
     }
     store.add_document(doc)

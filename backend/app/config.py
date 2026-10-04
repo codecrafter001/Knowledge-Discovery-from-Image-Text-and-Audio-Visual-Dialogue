@@ -9,6 +9,12 @@ UPLOAD_DIR = STORAGE_DIR / "uploads"
 DOCUMENTS_DB = STORAGE_DIR / "documents.json"
 EXTRACTIONS_DIR = STORAGE_DIR / "extractions"
 VECTORS_DIR = STORAGE_DIR / "vectors"
+IMAGE_EMBEDDINGS_DIR = STORAGE_DIR / "image_embeddings"
+
+# Path to tesseract.exe when it is not on PATH (the default Windows install folder is also checked).
+TESSERACT_CMD = os.getenv("KD_TESSERACT_CMD", "")
+CAPTION_MODEL = os.getenv("KD_CAPTION_MODEL", "Salesforce/blip-image-captioning-base")
+CLIP_MODEL = os.getenv("KD_CLIP_MODEL", "openai/clip-vit-base-patch32")
 
 EMBED_MODEL = os.getenv("KD_EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 # Passages below this cosine similarity are not cited unless keyword or graph search also found them.

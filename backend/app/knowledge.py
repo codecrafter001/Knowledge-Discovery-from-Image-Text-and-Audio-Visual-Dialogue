@@ -21,6 +21,8 @@ CATEGORY_COLORS = {
     "Audio Event": "#7f00ff",
 }
 MODALITY_LINK_COLORS = {"image": "#f59e0b", "audio": "#7f00ff", "video": "#00f2fe"}
+OCR_BOX_COLOR = "#f59e0b"  # OCR block that contains an entity
+OCR_BOX_COLOR_PLAIN = "#94a3b8"
 
 
 def entity_id(key: str) -> str:
@@ -105,9 +107,25 @@ def _extracted_triplets(extractions: list[dict], entities: dict[str, dict]) -> l
                 "evidenceSnippet": t["sentence"],
                 "pageNumber": t["page"],
                 "charSpan": t["charSpan"],
+                "evidenceSource": t.get("source", "text"),  # text | ocr | caption
+                **({"boundingBox": _ocr_box(t)} if "boundingBox" in t else {}),
                 "verified": False,
             })
     return triplets
+
+
+def _ocr_box(t: dict) -> dict:
+    label = t["sentence"] if len(t["sentence"]) <= 40 else t["sentence"][:37] + "..."
+    return {"id": t["blockId"], "label": label, "confidence": t["ocrConfidence"], "color": OCR_BOX_COLOR,
+            **t["boundingBox"]}
+
+
+def _evidence_confidence(t: dict) -> float | None:
+    """OCR confidence for OCR evidence; 1.0 for native text (no OCR/ASR step); None for
+    model-generated captions, which have no recognition confidence."""
+    if t["evidenceSource"] == "ocr":
+        return t["boundingBox"]["confidence"]
+    return None if t["evidenceSource"] == "caption" else 1.0
 
 
 def build() -> tuple[list[dict], list[dict]]:
@@ -140,6 +158,7 @@ def relations() -> list[dict]:
 
 
 def evidence() -> list[dict]:
+    content_urls = {d["id"]: d.get("contentUrl") for d in store.list_documents()}
     items = [
         {
             "id": f"ev-{t['id']}",
@@ -152,8 +171,11 @@ def evidence() -> list[dict]:
             "textSnippet": t["evidenceSnippet"],
             "pageNumber": t["pageNumber"],
             "charSpan": t["charSpan"],
+            "evidenceSource": t["evidenceSource"],
+            **({"imageUrl": content_urls.get(t["sourceDocId"])} if t["modality"] == "image" else {}),
+            **({"boundingBox": t["boundingBox"]} if "boundingBox" in t else {}),
             "alignmentScore": t["confidence"],
-            "asrOcrConfidence": 1.0,  # native text: no OCR/ASR step
+            "asrOcrConfidence": _evidence_confidence(t),
             "crossModalConsistency": 0.0,  # computed in Phase 2 (alignment)
         }
         for t in build()[1]

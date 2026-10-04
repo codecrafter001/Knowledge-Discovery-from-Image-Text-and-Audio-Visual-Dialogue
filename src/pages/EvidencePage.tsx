@@ -160,13 +160,15 @@ export const EvidencePage: React.FC = () => {
                   <div className="space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                       <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
-                      Visual Spatial Grounding &amp; Object Detection (SAM-2 + YOLO)
+                      Visual Spatial Grounding
                     </h4>
-                    <div className="relative rounded-xl overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center max-h-[380px]">
+                    <div className="rounded-xl overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center max-h-[380px]">
+                      {/* Wrapper sized to the rendered image so percentage boxes line up with it */}
+                      <div className="relative inline-block">
                       <img
                         src={selectedEvidence.imageUrl}
                         alt="Evidence image"
-                        className="w-full h-full object-contain max-h-[380px]"
+                        className="block max-w-full max-h-[380px]"
                       />
                       {/* Bounding box */}
                       {selectedEvidence.boundingBox && (
@@ -189,7 +191,16 @@ export const EvidencePage: React.FC = () => {
                           </div>
                         </div>
                       )}
+                      </div>
                     </div>
+                    {selectedEvidence.textSnippet && (
+                      <p className="text-xs text-slate-300 bg-slate-950/60 p-3 rounded-lg border border-white/5">
+                        <span className="text-slate-500 uppercase tracking-wider mr-2">
+                          {selectedEvidence.evidenceSource === 'caption' ? 'Caption (whole image)' : 'OCR text'}
+                        </span>
+                        "{selectedEvidence.textSnippet}"
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -270,7 +281,7 @@ export const EvidencePage: React.FC = () => {
                   </div>
                   <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
                     <span className="text-slate-400 block mb-1">ASR / OCR Confidence</span>
-                    <strong className="text-emerald-400 font-mono text-sm">{(selectedEvidence.asrOcrConfidence * 100).toFixed(1)}%</strong>
+                    <strong className="text-emerald-400 font-mono text-sm">{selectedEvidence.asrOcrConfidence == null ? 'n/a' : `${(selectedEvidence.asrOcrConfidence * 100).toFixed(1)}%`}</strong>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
                     <span className="text-slate-400 block mb-1">Triplet Consistency</span>
